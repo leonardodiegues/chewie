@@ -1,0 +1,17 @@
+Package: chewie
+Title: Chewie
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Leonardo",
+           family = "Diegues",
+           role = c("aut", "cre"),
+           email = "leodieggs@gmail.com",
+           comment = c(ORCID = "0000-0002-9651-0800"))
+Description: Easy-to-use scraper that chews on instructions to parse pages.
+License: MIT + file LICENSE
+Suggests: 
+    testthat
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.1.1
