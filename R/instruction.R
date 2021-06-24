@@ -21,10 +21,11 @@ is.instruction <- function(x) inherits(x, "chewie_instruction")
 #' @rdname instruction
 print.instruction <- function(x) {
   cat("<chewie_instruction>", "\n", sep = "")
-  cat("    title: ", x$title, "\n", sep = "")
-  cat("    path:  ", x$path, "\n", sep = "")
-  cat("    type:  ", x$type, "\n", sep = "")
-  cat("    pattern:  ", x$pattern, "\n", sep = "")
+  cat("    Title: ", x$title, "\n", sep = "")
+  cat("    Path:  ", x$path, "\n", sep = "")
+  cat("    Type:  ", x$type, "\n", sep = "")
+  cat("    Pattern:  ", x$pattern, "\n", sep = "")
+  invisible(x)
 }
 
 #' @export
@@ -44,7 +45,7 @@ execute_instruction <- function(page, instruction) {
   check_instruction(instruction)
 
   result <- page |>
-    rvest::html_nodes(css = instruction$path) |>
+    rvest::html_elements(css = instruction$path) |>
     parse_field(
       output_type = instruction$type,
       pattern = instruction$pattern

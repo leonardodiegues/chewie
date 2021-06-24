@@ -23,6 +23,7 @@ print.scheme <- function(x) {
     cat("  ")
     print.instruction(item)
   }
+  invisible(x)
 }
 
 #' Loads scheme from a dataframe
