@@ -4,7 +4,49 @@
 #'   vectorised by both packages properties, can return a list of text or a
 #'   single text
 #'
-#' @param field a `xml_document` or `xml_node` element
+#' @param field a `xml_node` or `xml_nodeset` element
+#' @param output_type the type of extractor to be utilized
+#' @param pattern a valid pattern pattern
+#'
+#' @keywords parser
+#'
+#' @export
+parse_field <- function(field, output_type = NULL, pattern = NULL) {
+  check_html_nodes(field)
+
+  if (is.null(output_type)) {
+    return(field)
+  }
+
+  valid_outputs <- c(
+    "string",
+    "numeric",
+    "table",
+    "date",
+    "datetime",
+    "timedelta",
+    "price"
+  )
+
+  switch(output_type,
+         string    = extract_text(field, pattern)     ,
+         numeric   = extract_number(field, pattern)   ,
+         table     = extract_table(field, pattern)    ,
+         date      = extract_date(field, pattern)     ,
+         datetime  = extract_datetime(field, pattern) ,
+         timedelta = extract_timedelta(field, pattern),
+         price     = extract_price(field, pattern)    ,
+         rlang::abort(sprintf("Invalid `output_type` value: '%s'", output_type))
+  )
+}
+
+#' Extract texts from `xml_document` or `xml_node` element.
+#'
+#' Text parser using methods from both `stringr` and `rvest`. Automatically
+#'   vectorised by both packages properties, can return a list of text or a
+#'   single text
+#'
+#' @param field a `xml_node` or `xml_nodeset` element
 #' @param pattern a valid RegEx pattern
 #'
 #' @family extractors
@@ -26,7 +68,7 @@ extract_text <- function(field, pattern = NULL) {
 #'
 #' Wrapper around `extract_text`. Converts extracted texts to numeric.
 #'
-#' @param field a `xml_document` or `xml_node` object
+#' @param field a `xml_node` or `xml_nodeset` element
 #' @param pattern a valid RegEx pattern
 #'
 #' @return
@@ -47,7 +89,7 @@ extract_numeric <- function(field, pattern = NULL) {
 #'   into a single integer and divide it by 100, considering that prices won't have
 #'   more than 2 decimal digits.
 #'
-#' @param field a `xml_node` element
+#' @param field a `xml_node` or `xml_nodeset` element
 #' @param pattern a valid RegEx pattern
 #'
 #' @family extractors
@@ -66,24 +108,22 @@ extract_price <- function(field, pattern = NULL) {
   price
 }
 
-# extract_datetime <- function(field, pattern = NULL, ...) {
-#   txt <- extract_text(field, pattern)
-#   lubridate::as_datetime(txt, ...)
-# }
-#
-# extract_table <- function(field, ...) {
-#   rvest::html_table(field, ...)
-# }
-#
-# extract_table(response, )
-#
-#
-# response <- httr::GET("https://webscraper.io/test-sites/tables") %>%
-#   httr::content(as = "text") %>%
-#   rvest::read_html()
-#
-#
-# response %>%
-#   rvest::html_elements("table:nth-of-type(1)") %>%
-#   extract_table()
+#' Extract datetime from `xml_node` elements.
+#'
+#' @param field
+#' @param pattern
+#' @export
+extract_datetime <- function(field, pattern = NULL, ...) {
+  txt <- extract_text(field, pattern)
+  lubridate::as_datetime(txt, ...)
+}
+
+#' Extract table from `xml_node` elements.
+#'
+#' @param field
+#' @param pattern
+#' @export
+extract_table <- function(field, ...) {
+  rvest::html_table(field, ...)
+}
 

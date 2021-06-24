@@ -7,7 +7,7 @@
 extract_price(field, pattern = NULL)
 }
 \arguments{
-\item{field}{a \code{xml_node} element}
+\item{field}{a \code{xml_node} or \code{xml_nodeset} element}
 
 \item{pattern}{a valid RegEx pattern}
 }

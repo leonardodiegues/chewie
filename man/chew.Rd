@@ -4,12 +4,14 @@
 \alias{chew}
 \title{Chew instructions from scheme}
 \usage{
-chew(page, scheme)
+chew(scheme, page = NULL, url = NULL, ...)
 }
 \arguments{
-\item{page}{a \code{xml_document} element}
+\item{scheme}{a \code{scheme} type object containing scraping instructions}
 
-\item{scheme}{the type of extractor to be utilized}
+\item{page}{a product of \code{rvest::read_html()}}
+
+\item{url}{a link to a page}
 }
 \description{
 Loads scheme and parses a page using the instructions contained by it.

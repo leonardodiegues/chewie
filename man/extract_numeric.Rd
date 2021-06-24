@@ -7,7 +7,7 @@
 extract_numeric(field, pattern = NULL)
 }
 \arguments{
-\item{field}{a \code{xml_document} or \code{xml_node} object}
+\item{field}{a \code{xml_node} or \code{xml_nodeset} element}
 
 \item{pattern}{a valid RegEx pattern}
 }
