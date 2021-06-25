@@ -4,14 +4,14 @@
 \alias{parse_field}
 \title{Extract texts from \code{xml_document} or \code{xml_node} element.}
 \usage{
-parse_field(field, output_type = NULL, pattern = NULL)
+parse_field(field, as = NULL, pattern = NULL)
 }
 \arguments{
 \item{field}{a \code{xml_node} or \code{xml_nodeset} element}
 
-\item{output_type}{the type of extractor to be utilized}
-
 \item{pattern}{a valid pattern pattern}
+
+\item{output_type}{the type of extractor to be utilized}
 }
 \description{
 Text parser using methods from both \code{stringr} and \code{rvest}. Automatically

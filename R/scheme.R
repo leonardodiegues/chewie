@@ -13,17 +13,23 @@ scheme <- function(instructions) {
 
 #' @export
 #' @rdname scheme
-is.scheme <- function(x) inherits(x, "chewie_scheme")
+is.chewie_scheme <- function(x) inherits(x, "chewie_scheme")
 
 #' @export
 #' @rdname scheme
-print.scheme <- function(x) {
+print.chewie_scheme <- function(x) {
   cat("<chewie_scheme>", "\n", sep = "")
   for (item in x) {
     cat("  ")
-    print.instruction(item)
+    print.chewie_instruction(item)
   }
   invisible(x)
+}
+
+#' @export
+#' @rdname as_scheme
+as_scheme <- function(x) {
+  UseMethod("as_scheme")
 }
 
 #' Loads scheme from a dataframe
@@ -33,11 +39,10 @@ print.scheme <- function(x) {
 #' @keywords scheme
 #'
 #' @export
-#' @export
-scheme_from_dataframe <- function(x) {
+as_scheme.data.frame <- function(x) {
   rows <- purrr::transpose(x)
 
-  instructions <- purrr::map(rows, instruction_from_list)
+  instructions <- purrr::map(rows, as_instruction)
 
   scheme(instructions)
 }
@@ -54,15 +59,20 @@ scheme_from_dataframe <- function(x) {
 #'
 #' @export
 chew <- function(scheme, page = NULL, url = NULL, ...) {
-  if (sum(!inherits(scheme, "chewie_scheme"), !inherits(scheme, "data.frame"))) {
-    rlang::abort("`scheme` parameter should be of `chewie_scheme` or `data.frame` type")
+  if (
+    sum(!inherits(scheme, "chewie_scheme"),
+        !inherits(scheme, "data.frame")) != 1
+  ) {
+    rlang::abort(
+      "`scheme` parameter should be of `chewie_scheme` or `data.frame` type"
+    )
   }
 
   if (sum(!missing(page), !missing(url)) != 1) {
     rlang::abort("Must supply exactly one of `page` or `url`")
   }
 
-  if (missing(page) & !missing(url)) {
+  if (!missing(url)) {
     page <- httr::GET(url, ...) |>
       httr::content(as = "text") |>
       rvest::read_html()
@@ -71,7 +81,7 @@ chew <- function(scheme, page = NULL, url = NULL, ...) {
   check_html_document(page)
 
   if (inherits(scheme, "data.frame")) {
-    scheme <- scheme_from_dataframe(scheme)
+    scheme <- as_scheme(scheme)
   }
 
   purrr::map(scheme, ~ execute_instruction(page, .x))

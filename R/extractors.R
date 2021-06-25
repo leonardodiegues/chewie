@@ -11,10 +11,10 @@
 #' @keywords parser
 #'
 #' @export
-parse_field <- function(field, output_type = NULL, pattern = NULL) {
+parse_field <- function(field, as = NULL, pattern = NULL) {
   check_html_nodes(field)
 
-  if (is.null(output_type)) {
+  if (is.null(as)) {
     return(field)
   }
 
@@ -28,15 +28,15 @@ parse_field <- function(field, output_type = NULL, pattern = NULL) {
     "price"
   )
 
-  switch(output_type,
-         string    = extract_text(field, pattern)     ,
-         numeric   = extract_number(field, pattern)   ,
-         table     = extract_table(field, pattern)    ,
-         date      = extract_date(field, pattern)     ,
-         datetime  = extract_datetime(field, pattern) ,
-         timedelta = extract_timedelta(field, pattern),
-         price     = extract_price(field, pattern)    ,
-         rlang::abort(sprintf("Invalid `output_type` value: '%s'", output_type))
+  switch(as,
+    string    = extract_text(field, pattern)     ,
+    numeric   = extract_number(field, pattern)   ,
+    table     = extract_table(field, pattern)    ,
+    date      = extract_date(field, pattern)     ,
+    datetime  = extract_datetime(field, pattern) ,
+    timedelta = extract_timedelta(field, pattern),
+    price     = extract_price(field, pattern)    ,
+    rlang::abort(sprintf("Invalid `as` value: '%s'", as))
   )
 }
 
@@ -124,6 +124,10 @@ extract_datetime <- function(field, pattern = NULL, ...) {
 #' @param pattern
 #' @export
 extract_table <- function(field, ...) {
-  rvest::html_table(field, ...)
+  tbl <- rvest::html_table(field, ...)
+
+  first_row <- field |>
+    rvest::html_element(css = "tr") |>
+
 }
 
