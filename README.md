@@ -11,15 +11,14 @@ experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](h
 status](https://www.r-pkg.org/badges/version/chewie)](https://CRAN.R-project.org/package=chewie)
 <!-- badges: end -->
 
-The goal of chewie is to easily scrape pages (actually, chews them)
-without having to call multiple HTML information extraction methods over
-and over again. It simplifies the process by feeding a `scheme` to a
-single method called `chew`.
+The goal of chewie is to easily scrape pages without having to call
+multiple extraction methods over and over again. It simplifies the
+process by feeding a `scheme` to a single method called `chew`.
 
-A `scheme` is like a recipe which gives chewie the guidelines of where
-are the elements you want to extract from page and how you to extract
-them. Each page you “chew” should have a single scheme composed by a
-list of `instruction` objects.
+A `scheme` is like a recipe that gives chewie the guidelines to where
+elements are in a page and how to extract them. Each page you choose to
+“chew” should have a single scheme composed by a list of instruction
+objects.
 
 A `instruction` is formed by the following 6 fields (more fields could
 be added on future releases):
@@ -55,7 +54,7 @@ remotes::install_github("leonardodiegues/chewie")
 
 Schemes can be loaded either from instantiating a `scheme` or a
 `data.frame` object. The following chunk exemplifies both manners by
-looking at Rio 2016 100 metres butterfly results:
+looking at Rio 2016 100 meters butterfly results:
 
 ``` r
 library(chewie)
@@ -71,8 +70,7 @@ page_scheme <- scheme(
     instruction(
       title = "event_name",
       path = "h1:nth-of-type(1)",
-      parse_as = "numeric",
-      pattern = "\\d+"
+      parse_as = "text",
     ),
     instruction(
       title = "event_location",
@@ -108,9 +106,9 @@ print(results)
 #>     * title:    event_name
 #>     * path:     h1:nth-of-type(1)
 #>     * selector: css
-#>     * parse as: numeric
-#>     * pattern:  \d+
-#>     * result:   100
+#>     * parse as: text
+#>     * pattern:  
+#>     * result:   100 metres Butterfly, Men
 #> 
 #> [[2]]
 #> <chewie_instruction>
