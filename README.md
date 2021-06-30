@@ -141,9 +141,13 @@ print(results)
 Generally extraction methods are wraps around `rvest::html_text2` and
 `stringr::str_extract`. In the case of `extract_table` it would be
 useful if we could not only pull the table as a `data.frame` (using
-`rvest::html_table`) but add new columns with URLs based on columns that
-have `a` tags attached to them. Let’s check the resulting table from the
-fourth instruction:
+`rvest::html_table`) but add new URL columns based on columns that have
+`a` tags attached to them. This is the default behavior but could be
+turned off by setting `parse_url_cols` to `FALSE`. Unfortunately this
+flag was not implemented as a instruction field yet as I’m thinking
+about how to enhance package’s UX.
+
+Let’s check the resulting table from the fourth instruction:
 
 ``` r
 tbl <- results[[4]]$result
