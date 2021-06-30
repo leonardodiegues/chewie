@@ -20,37 +20,89 @@ knitr::opts_chunk$set(
 [![CRAN status](https://www.r-pkg.org/badges/version/chewie)](https://CRAN.R-project.org/package=chewie)
 <!-- badges: end -->
 
-The goal of chewie is to ...
+The goal of chewie is to easily scrape pages (actually, chews them) without having to call multiple HTML information extraction methods over and over again. It simplifies the process by feeding a `scheme` to a single method called `chew`.
 
-## Installation
+A `scheme` is like a recipe which gives chewie the guidelines of where are the elements you want to extract from page and how you to extract them. Each page you "chew" should have a single scheme composed by a list of `instruction` objects.
 
-You can install the released version of chewie from [CRAN](https://CRAN.R-project.org) with:
+A `instruction` is formed by the following 6 fields (more fields could be added on future releases):
+
+1. `title`: an arbitrary name to the scraped object
+2. `selector`: whether `path`/`alternative_path` is a css or xpath selector, defaults to `NULL`
+3. `path`: a css or xpath path to the object to be scraped
+4. `alternative_path`: an alternative css or xpath path to the object to be scraped
+5. `parse_as`: indicates if an extractor should be applied to the resulting scraped item. Currently available extractors are:
+    - `text`: uses `extract_text`
+    - `numeric`: uses`extract_numeric`
+    - `table`: uses `extract_table`
+    - `date`: uses `extract_date`
+    - `datetime`: uses `extract_datetime`
+    - `difftime`: uses `extract_difftime`
+    - `price`: `extract_price`.
+6. `pattern`: a RegEx pattern to be applied before parsing
+
+## Quickstart
+
+### Instalation
+
+You can install the released version of `chewie` with:
 
 ``` r
-install.packages("chewie")
+remotes::install_github("leonardodiegues/chewie")
 ```
 
-## Example
+### Usage
 
-This is a basic example which shows you how to solve a common problem:
+Schemes can be loaded either from instantiating a `scheme` or a `data.frame` object. The following chunk exemplifies both manners by looking at Rio 2016 100 metres butterfly results:
 
 ```{r example}
 library(chewie)
-## basic example code
+
+swimming_100m_butterfly <- "http://www.olympedia.org/results/357088"
+
+# Load data from a `data.frame` containing columns corresponding to available fields.
+# page_scheme <- read.csv("swimming_100m_butterfly_recipe.csv")
+
+# Or manually add all fields
+page_scheme <- scheme(
+  list(
+    instruction(
+      title = "event_name",
+      path = "h1:nth-of-type(1)",
+      parse_as = "numeric",
+      pattern = "\\d+"
+    ),
+    instruction(
+      title = "event_location",
+      path = "//table[1]/tr[3]/td[1]",
+      selector = "xpath",
+      parse_as = "text"
+    ),
+    instruction(
+      title = "n_participants",
+      path = "table:nth-of-type(1) > tr:nth-of-type(4) > td",
+      parse_as = "numeric",
+      pattern = "^(\\d+) "
+    ),
+    instruction(
+      title = "event_results",
+      path = "//table[2]",
+      selector = "xpath",
+      parse_as = "table"
+    )
+  )
+)
+
+# Chew page based on scheme
+results <- chew(scheme = page_scheme, url = swimming_100m_butterfly)
+
+print(results)
 ```
 
-What is special about using `README.Rmd` instead of just `README.md`? You can include R chunks like so:
+Generally extraction methods are wraps around `rvest::html_text2` and `stringr::str_extract`. In the case of `extract_table` it would be useful if we could not only pull the table as a `data.frame` (using `rvest::html_table`) but add new columns with URLs based on columns that have `a` tags attached to them. Let's check the resulting table from the fourth instruction:
 
-```{r cars}
-summary(cars)
+```{r table}
+tbl <- results[[4]]$result
+
+print(tbl)
 ```
 
-You'll still need to render `README.Rmd` regularly, to keep `README.md` up-to-date.
-
-You can also embed plots, for example:
-
-```{r pressure, echo = FALSE}
-plot(pressure)
-```
-
-In that case, don't forget to commit and push the resulting figure files, so they display on GitHub!

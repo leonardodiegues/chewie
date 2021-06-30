@@ -4,7 +4,7 @@
 \alias{extract_table}
 \title{Extract table from \code{xml_node} elements.}
 \usage{
-extract_table(field, parse_url_cols = FALSE, ...)
+extract_table(field, parse_url_cols = TRUE, ...)
 }
 \arguments{
 \item{field}{a \code{xml_node} or \code{xml_nodeset} element}
