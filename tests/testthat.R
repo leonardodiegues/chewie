@@ -1,4 +1,4 @@
 library(testthat)
-library(scrpr)
+library(chewie)
 
-test_check("scrpr")
+test_check("chewie")
