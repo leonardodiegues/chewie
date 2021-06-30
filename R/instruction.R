@@ -56,12 +56,18 @@ is.chewie_instruction <- function(x) inherits(x, "chewie_instruction")
 #' @export
 print.chewie_instruction <- function(x) {
   cat("<chewie_instruction>", "\n", sep = "")
-  cat("    * title:     ", x$title, "\n", sep = "")
-  cat("    * path:      ", x$path, "\n", sep = "")
-  cat("    * selector:  ", x$selector, "\n", sep = "")
-  cat("    * parse as:  ", x$parse_as, "\n", sep = "")
-  cat("    * pattern:   ", x$pattern, "\n", sep = "")
-  cat("    * result:    ", x$result, "\n", sep = "")
+  cat("    * title:    ", x$title, "\n", sep = "")
+  cat("    * path:     ", x$path, "\n", sep = "")
+  cat("    * selector: ", x$selector, "\n", sep = "")
+  cat("    * parse as: ", x$parse_as, "\n", sep = "")
+  cat("    * pattern:  ", x$pattern, "\n", sep = "")
+
+  if (inherits(x$result, "data.frame")) {
+    cat("    * result:   a ", nrow(x$result),"x", length(x$result), " `data.frame`", "\n", sep = "")
+  } else {
+    cat("    * result:   ", x$result, "\n", sep = "")
+  }
+
   invisible(x)
 }
 
@@ -123,52 +129,4 @@ execute_instruction <- function(page, instruction) {
 instruction_set_result <- function(x, result) {
   x$result <- result
   x
-}
-
-#' Find elements in a parsed HTML page
-#'
-#' \code{find_elements} scrapes a HTML page using `rvest::html_elements` and
-#'   paths described in a `chewie_instruction` object. If `path` argument in
-#'   instruction doesn't find any results it will automatically switch to an
-#'   `alternative_path` if it is described in instruction as well.
-#'
-#' @param page a `xml_document` object
-#' @param instruction a `chewie_instruction` object
-#'
-#' @return correspondent `xml_node` or `xml_nodeset` of the described `path`/
-#'   `alternative_path`
-#'
-#' @examples
-#' \dontrun{
-#' sample_instruction <- instruction(
-#'   title = "price_header",
-#'   path = "h1:nth-of-type(1)",
-#'   selector = "css",
-#'   alternative_path = "h2:nth-of-type(2)",
-#'   parse_as = "text"
-#' )
-#'
-#' sample_page <- rvest::read_html(response)
-#'
-#' results <- find_elements(sample_page, sample_instruction)
-#' }
-#'
-#' @export
-find_elements <- function(page, instruction) {
-  selector <- instruction$selector
-  path <- instruction$path
-
-  path_args <- list()
-  path_args$x <- page
-  path_args[selector[1]] <- path
-
-  results <- do.call(rvest::html_elements, path_args)
-
-  if (is.null(results) | length(results) == 0) {
-    path_args[selector[1]] <- instruction$alternative_path
-
-    results <- do.call(rvest::html_elements, path_args)
-  }
-
-  results
 }
