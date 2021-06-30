@@ -139,7 +139,7 @@ extract_table <- function(field, parse_url_cols = FALSE, ...) {
 
   if (!inherits(tbl, "data.frame")) {
     if (length(tbl) > 1) {
-      rlang::abort("`field` parameter should aim at one table at a time.")
+      rlang::abort("`field` parameter should aim one table at a time.")
     } else {
       tbl <- tbl[[1]]
     }
