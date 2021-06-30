@@ -2,11 +2,13 @@
 
 S3method(as_instruction,list)
 S3method(as_scheme,data.frame)
+S3method(as_scheme,list)
 S3method(print,chewie_instruction)
 S3method(print,chewie_scheme)
 export(as_instruction)
 export(as_scheme)
 export(chew)
+export(detect_url_cols)
 export(execute_instruction)
 export(extract_datetime)
 export(extract_numeric)

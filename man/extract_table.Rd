@@ -4,8 +4,22 @@
 \alias{extract_table}
 \title{Extract table from \code{xml_node} elements.}
 \usage{
-extract_table(field, ...)
+extract_table(field, parse_url_cols = FALSE, ...)
+}
+\arguments{
+\item{field}{a \code{xml_node} or \code{xml_nodeset} element}
+
+\item{parse_url_cols}{whether table should include \code{href} attributes from
+columns that have \verb{<a>} tags attached to them, defaults to FALSE.}
+}
+\value{
+a \code{data.frame} containing the extracted table.
 }
 \description{
-Extract table from \code{xml_node} elements.
+\code{extract_table} retrieves a table as \code{data.frame} from a parsed HTML page.
+}
+\details{
+Users should expect unstable results when \code{parse_url_cols} is TRUE due to
+uncovered cases. This function is an ongoing process and shall be modified
+in the future.
 }

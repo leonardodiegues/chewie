@@ -6,6 +6,11 @@
 \usage{
 extract_datetime(field, pattern = NULL, ...)
 }
+\arguments{
+\item{field}{a \code{xml_node} or \code{xml_nodeset} element}
+
+\item{pattern}{a valid RegEx pattern}
+}
 \description{
 Extract datetime from \code{xml_node} elements.
 }

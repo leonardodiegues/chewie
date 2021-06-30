@@ -12,11 +12,11 @@ scheme <- function(instructions) {
 }
 
 #' @export
-#' @rdname scheme
+#' @rdname chewie_scheme
 is.chewie_scheme <- function(x) inherits(x, "chewie_scheme")
 
 #' @export
-#' @rdname scheme
+#' @rdname chewie_scheme
 print.chewie_scheme <- function(x) {
   cat("<chewie_scheme>", "\n", sep = "")
   for (item in x) {
@@ -39,10 +39,25 @@ as_scheme <- function(x) {
 #' @keywords scheme
 #'
 #' @export
+#' @rdname as_scheme
 as_scheme.data.frame <- function(x) {
   rows <- purrr::transpose(x)
 
-  instructions <- purrr::map(rows, as_instruction)
+  instructions <- lapply(rows, as_instruction)
+
+  scheme(instructions)
+}
+
+#' Loads scheme from a list
+#'
+#' @family scheme
+#'
+#' @keywords scheme
+#'
+#' @export
+#' @rdname as_scheme
+as_scheme.list <- function(x) {
+  instructions <- lapply(rows, as_instruction)
 
   scheme(instructions)
 }
