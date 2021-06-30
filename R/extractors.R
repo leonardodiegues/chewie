@@ -1,3 +1,51 @@
+#' Find elements in a parsed HTML page
+#'
+#' \code{find_elements} scrapes a HTML page using `rvest::html_elements` and
+#'   paths described in a `chewie_instruction` object. If `path` argument in
+#'   instruction doesn't find any results it will automatically switch to an
+#'   `alternative_path` if it is described in instruction as well.
+#'
+#' @param page a `xml_document` object
+#' @param instruction a `chewie_instruction` object
+#'
+#' @return correspondent `xml_node` or `xml_nodeset` of the described `path`/
+#'   `alternative_path`
+#'
+#' @examples
+#' \dontrun{
+#' sample_instruction <- instruction(
+#'   title = "price_header",
+#'   path = "h1:nth-of-type(1)",
+#'   selector = "css",
+#'   alternative_path = "h2:nth-of-type(2)",
+#'   parse_as = "text"
+#' )
+#'
+#' sample_page <- rvest::read_html(response)
+#'
+#' results <- find_elements(sample_page, sample_instruction)
+#' }
+#'
+#' @export
+find_elements <- function(page, instruction) {
+  selector <- instruction$selector
+  path <- instruction$path
+
+  path_args <- list()
+  path_args$x <- page
+  path_args[selector[1]] <- path
+
+  results <- do.call(rvest::html_elements, path_args)
+
+  if (is.null(results) | length(results) == 0) {
+    path_args[selector[1]] <- instruction$alternative_path
+
+    results <- do.call(rvest::html_elements, path_args)
+  }
+
+  results
+}
+
 #' Extract texts from `xml_document` or `xml_node` element.
 #'
 #' Text parser using methods from both `stringr` and `rvest`. Automatically
@@ -30,8 +78,8 @@ parse_field <- function(field, as = NULL, pattern = NULL) {
 
   switch(as,
     text      = extract_text(field, pattern),
-    numeric   = extract_number(field, pattern),
-    table     = extract_table(field, pattern),
+    numeric   = extract_numeric(field, pattern),
+    table     = extract_table(field),
     date      = extract_date(field, pattern),
     datetime  = extract_datetime(field, pattern),
     timedelta = extract_timedelta(field, pattern),
@@ -134,7 +182,7 @@ extract_datetime <- function(field, pattern = NULL, ...) {
 #' @return a `data.frame` containing the extracted table.
 
 #' @export
-extract_table <- function(field, parse_url_cols = FALSE, ...) {
+extract_table <- function(field, parse_url_cols = TRUE, ...) {
   tbl <- rvest::html_table(field, ...)
 
   if (!inherits(tbl, "data.frame")) {
