@@ -61,6 +61,7 @@ print.chewie_instruction <- function(x) {
   cat("    * selector:  ", x$selector, "\n", sep = "")
   cat("    * parse as:  ", x$parse_as, "\n", sep = "")
   cat("    * pattern:   ", x$pattern, "\n", sep = "")
+  cat("    * result:    ", x$result, "\n", sep = "")
   invisible(x)
 }
 
