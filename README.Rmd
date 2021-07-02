@@ -60,8 +60,14 @@ library(chewie)
 
 swimming_100m_butterfly <- "http://www.olympedia.org/results/357088"
 
-# Load data from a `data.frame` containing columns corresponding to available fields.
-# page_scheme <- read.csv("swimming_100m_butterfly_recipe.csv")
+# Directly load scheme from a `data.frame` containing columns corresponding to available fields.
+page_scheme <- tibble::tribble(
+  ~title          , ~path,                                           ~selector, ~parse_as, ~pattern,
+  "event_name"    , "h1:nth-of-type(1)"                            , NULL     , "text"   , NULL,
+  "event_location", "//table[1]/tr[3]/td[1]"                       , "xpath"  , "text"   , NULL,
+  "n_participants", "table:nth-of-type(1) > tr:nth-of-type(4) > td", NULL     , "numeric", "^(\\d+) ",
+  "event_results" , "//table[2]"                                   , "xpath"  , "table"  , NULL
+)
 
 # Or manually add all fields
 page_scheme <- scheme(

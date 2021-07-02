@@ -64,8 +64,14 @@ library(chewie)
 
 swimming_100m_butterfly <- "http://www.olympedia.org/results/357088"
 
-# Load data from a `data.frame` containing columns corresponding to available fields.
-# page_scheme <- read.csv("swimming_100m_butterfly_recipe.csv")
+# Directly load scheme from a `data.frame` containing columns corresponding to available fields.
+page_scheme <- tibble::tribble(
+  ~title          , ~path,                                           ~selector, ~parse_as, ~pattern,
+  "event_name"    , "h1:nth-of-type(1)"                            , NULL     , "text"   , NULL,
+  "event_location", "//table[1]/tr[3]/td[1]"                       , "xpath"  , "text"   , NULL,
+  "n_participants", "table:nth-of-type(1) > tr:nth-of-type(4) > td", NULL     , "numeric", "^(\\d+) ",
+  "event_results" , "//table[2]"                                   , "xpath"  , "table"  , NULL
+)
 
 # Or manually add all fields
 page_scheme <- scheme(
@@ -157,17 +163,17 @@ print(tbl)
 #> # A tibble: 43 x 11
 #>    Pos   Swimmer  NOC   R1     SF    Final ...7  ...8  ...9  Swimmer_url NOC_url
 #>    <chr> <chr>    <chr> <chr>  <chr> <chr> <chr> <chr> <lgl> <chr>       <chr>  
-#>  1 1     Joseph … SGP   51.41… 50.8… 50.3… "Gol… "OR"  NA    /athletes/… /count…
-#>  2 =2    Michael… USA   51.60… 51.5… 51.1… "Sil… ""    NA    /athletes/… /count…
-#>  3 =2    Chad le… RSA   51.75… 51.4… 51.1… "Sil… ""    NA    /athletes/… /count…
-#>  4 =2    László … HUN   51.52… 51.5… 51.1… "Sil… ""    NA    /athletes/… /count…
-#>  5 5     Li Zhuh… CHN   51.78… 51.5… 51.2… ""    ""    NA    /athletes/… /count…
-#>  6 6     Mehdy M… FRA   51.71… 51.7… 51.5… ""    ""    NA    /athletes/… /count…
-#>  7 7     Tom Shi… USA   51.58… 51.6… 51.7… ""    ""    NA    /athletes/… /count…
-#>  8 8     Aleksan… RUS   51.91… 51.7… 51.8… ""    ""    NA    /athletes/… /count…
-#>  9 9     David M… AUS   51.81… 51.7… –     ""    ""    NA    /athletes/… /count…
-#> 10 10    Konrad … POL   51.81… 51.8… –     ""    ""    NA    /athletes/… /count…
-#> # … with 33 more rows
+#>  1 1     Joseph ~ SGP   51.41~ 50.8~ 50.3~ "Gol~ "OR"  NA    /athletes/~ /count~
+#>  2 =2    Michael~ USA   51.60~ 51.5~ 51.1~ "Sil~ ""    NA    /athletes/~ /count~
+#>  3 =2    Chad le~ RSA   51.75~ 51.4~ 51.1~ "Sil~ ""    NA    /athletes/~ /count~
+#>  4 =2    László ~ HUN   51.52~ 51.5~ 51.1~ "Sil~ ""    NA    /athletes/~ /count~
+#>  5 5     Li Zhuh~ CHN   51.78~ 51.5~ 51.2~ ""    ""    NA    /athletes/~ /count~
+#>  6 6     Mehdy M~ FRA   51.71~ 51.7~ 51.5~ ""    ""    NA    /athletes/~ /count~
+#>  7 7     Tom Shi~ USA   51.58~ 51.6~ 51.7~ ""    ""    NA    /athletes/~ /count~
+#>  8 8     Aleksan~ RUS   51.91~ 51.7~ 51.8~ ""    ""    NA    /athletes/~ /count~
+#>  9 9     David M~ AUS   51.81~ 51.7~ –     ""    ""    NA    /athletes/~ /count~
+#> 10 10    Konrad ~ POL   51.81~ 51.8~ –     ""    ""    NA    /athletes/~ /count~
+#> # ... with 33 more rows
 ```
 
 Parsed HTML pages can also be chewed:
