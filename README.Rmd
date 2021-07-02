@@ -18,6 +18,7 @@ knitr::opts_chunk$set(
 <!-- badges: start -->
 [![Lifecycle: experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN status](https://www.r-pkg.org/badges/version/chewie)](https://CRAN.R-project.org/package=chewie)
+[![minimal R version](https://img.shields.io/badge/R%3E%3D-4.1.0-6666ff.svg)](https://cran.r-project.org/)
 <!-- badges: end -->
 
 The goal of chewie is to easily scrape pages without having to call multiple extraction methods over and over again. It simplifies the process by feeding a `scheme` to a single method called `chew`.
@@ -30,14 +31,14 @@ A `instruction` is formed by the following 6 fields (more fields could be added 
 2. `selector`: whether `path`/`alternative_path` is a css or xpath selector, defaults to `NULL`
 3. `path`: a css or xpath path to the object to be scraped
 4. `alternative_path`: an alternative css or xpath path to the object to be scraped
-5. `parse_as`: indicates if an extractor should be applied to the resulting scraped item. Currently available extractors are:
-    - `text`: uses `extract_text`
-    - `numeric`: uses`extract_numeric`
-    - `table`: uses `extract_table`
-    - `date`: uses `extract_date`
-    - `datetime`: uses `extract_datetime`
-    - `difftime`: uses `extract_difftime`
-    - `price`: `extract_price`.
+5. `parse_as`: indicates if an extractor should be applied to the resulting scraped item. To return raw objects, just leave it as `NULL`. Currently available extractors are:
+    - `text`
+    - `numeric`
+    - `table`
+    - `date`
+    - `datetime`
+    - `difftime`
+    - `price`
 6. `pattern`: a RegEx pattern to be applied before parsing
 
 ## Quickstart
@@ -97,7 +98,7 @@ results <- chew(scheme = page_scheme, url = swimming_100m_butterfly)
 print(results)
 ```
 
-Generally extraction methods are wraps around `rvest::html_text2` and `stringr::str_extract`. In the case of `extract_table` it would be useful if we could not only pull the table as a `data.frame` (using `rvest::html_table`) but add new URL columns based on columns that have `a` tags attached to them. This is the default behavior but could be turned off by setting `parse_url_cols` to `FALSE`. Unfortunately this flag was not implemented as a instruction field yet as I'm thinking about how to enhance package's UX.
+Generally extraction methods are wraps around `rvest::html_text2` and `stringr::str_extract`. In the case of `extract_table` it would be useful if we could not only pull the table as a `data.frame` (using `rvest::html_table`) but add new URL columns based on columns that have `a` tags attached to them. This is `extract_table` default behavior and can't be changed yet (work in progress).
 
 Let's check the resulting table from the fourth instruction:
 
@@ -105,5 +106,16 @@ Let's check the resulting table from the fourth instruction:
 tbl <- results[[4]]$result
 
 print(tbl)
+```
+
+Parsed HTML pages can also be chewed:
+
+```{r example2}
+swimming_100m_butterfly_page <- swimming_100m_butterfly |>
+  httr::GET() |> 
+  httr::content(as = "text") |> 
+  rvest::read_html()
+
+chew(scheme = page_scheme, page = swimming_100m_butterfly_page)
 ```
 

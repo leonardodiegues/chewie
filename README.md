@@ -9,6 +9,8 @@
 experimental](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 [![CRAN
 status](https://www.r-pkg.org/badges/version/chewie)](https://CRAN.R-project.org/package=chewie)
+[![minimal R
+version](https://img.shields.io/badge/R%3E%3D-4.1.0-6666ff.svg)](https://cran.r-project.org/)
 <!-- badges: end -->
 
 The goal of chewie is to easily scrape pages without having to call
@@ -30,14 +32,15 @@ be added on future releases):
 4.  `alternative_path`: an alternative css or xpath path to the object
     to be scraped
 5.  `parse_as`: indicates if an extractor should be applied to the
-    resulting scraped item. Currently available extractors are:
-    -   `text`: uses `extract_text`
-    -   `numeric`: uses`extract_numeric`
-    -   `table`: uses `extract_table`
-    -   `date`: uses `extract_date`
-    -   `datetime`: uses `extract_datetime`
-    -   `difftime`: uses `extract_difftime`
-    -   `price`: `extract_price`.
+    resulting scraped item. To return raw objects, just leave it as
+    `NULL`. Currently available extractors are:
+    -   `text`
+    -   `numeric`
+    -   `table`
+    -   `date`
+    -   `datetime`
+    -   `difftime`
+    -   `price`
 6.  `pattern`: a RegEx pattern to be applied before parsing
 
 ## Quickstart
@@ -142,10 +145,8 @@ Generally extraction methods are wraps around `rvest::html_text2` and
 `stringr::str_extract`. In the case of `extract_table` it would be
 useful if we could not only pull the table as a `data.frame` (using
 `rvest::html_table`) but add new URL columns based on columns that have
-`a` tags attached to them. This is the default behavior but could be
-turned off by setting `parse_url_cols` to `FALSE`. Unfortunately this
-flag was not implemented as a instruction field yet as I’m thinking
-about how to enhance package’s UX.
+`a` tags attached to them. This is `extract_table` default behavior and
+can’t be changed yet (work in progress).
 
 Let’s check the resulting table from the fourth instruction:
 
@@ -167,4 +168,54 @@ print(tbl)
 #>  9 9     David M… AUS   51.81… 51.7… –     ""    ""    NA    /athletes/… /count…
 #> 10 10    Konrad … POL   51.81… 51.8… –     ""    ""    NA    /athletes/… /count…
 #> # … with 33 more rows
+```
+
+Parsed HTML pages can also be chewed:
+
+``` r
+swimming_100m_butterfly_page <- swimming_100m_butterfly |>
+  httr::GET() |> 
+  httr::content(as = "text") |> 
+  rvest::read_html()
+
+chew(scheme = page_scheme, page = swimming_100m_butterfly_page)
+#> New names:
+#> * `` -> ...7
+#> * `` -> ...8
+#> * `` -> ...9
+#> [[1]]
+#> <chewie_instruction>
+#>     * title:    event_name
+#>     * path:     h1:nth-of-type(1)
+#>     * selector: css
+#>     * parse as: text
+#>     * pattern:  
+#>     * result:   100 metres Butterfly, Men
+#> 
+#> [[2]]
+#> <chewie_instruction>
+#>     * title:    event_location
+#>     * path:     //table[1]/tr[3]/td[1]
+#>     * selector: xpath
+#>     * parse as: text
+#>     * pattern:  
+#>     * result:   Estádio Aquático Olímpico, Parque Olímpico da Barra, Barra da Tijuca, Rio de Janeiro
+#> 
+#> [[3]]
+#> <chewie_instruction>
+#>     * title:    n_participants
+#>     * path:     table:nth-of-type(1) > tr:nth-of-type(4) > td
+#>     * selector: css
+#>     * parse as: numeric
+#>     * pattern:  ^(\d+) 
+#>     * result:   43
+#> 
+#> [[4]]
+#> <chewie_instruction>
+#>     * title:    event_results
+#>     * path:     //table[2]
+#>     * selector: xpath
+#>     * parse as: table
+#>     * pattern:  
+#>     * result:   a 43x11 `data.frame`
 ```
