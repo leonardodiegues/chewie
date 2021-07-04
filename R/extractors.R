@@ -62,7 +62,7 @@ find_elements <- function(page, instruction) {
 parse_field <- function(field, as = NULL, pattern = NULL) {
   check_html_nodes(field)
 
-  if (is.null(as)) {
+  if (missing(as)) {
     return(field)
   }
 
